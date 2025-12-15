@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import Background from './Background';
 
+import logo from './assets/logo.png';
+
 function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -31,7 +33,7 @@ function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0 flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <img src="/logo.png" alt="SGA DATA Logo" className="h-10 w-10 object-contain" />
+                        <img src={logo} alt="SGA DATA Logo" className="h-10 w-10 object-contain" />
                         <span className="text-2xl font-bold tracking-tighter text-white">SGA <span className="text-sga-cyan">DATA</span></span>
                     </div>
                     <div className="hidden md:block">
@@ -403,7 +405,7 @@ function Footer() {
         <footer className="py-12 border-t border-white/5 bg-sga-navy/80 text-gray-400 text-sm relative z-10 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="flex items-center gap-2">
-                    <img src="/logo.png" alt="SGA DATA" className="h-8 w-8" />
+                    <img src={logo} alt="SGA DATA" className="h-8 w-8" />
                     <span className="font-semibold text-white">SGA DATA © 2025</span>
                 </div>
                 <div className="flex gap-6">
