@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGA DATA | Preview</title>
+    <!-- Tailwind CSS via CDN for instant preview -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sga: {
+                            navy: '#020617',
+                            card: '#0f172a',
+                            cyan: '#06b6d4',
+                            green: '#22c55e',
+                            accent: '#3b82f6',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: #020617;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% 0%, #112240 0%, #020617 100%);
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(6, 182, 212, 0.1);
+            transition: all 0.3s;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(6, 182, 212, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-sga-cyan selection:text-sga-navy">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3">
+                    <img src="./public/logo.png" alt="SGA DATA Logo" class="h-10 w-10 object-contain">
+                    <span class="text-2xl font-bold tracking-tighter text-white">SGA <span
+                            className="text-sga-cyan">DATA</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#services"
+                            class="hover:text-sga-cyan transition-colors px-3 py-2 text-sm font-medium">Servicios</a>
+                        <a href="#about"
+                            class="hover:text-sga-cyan transition-colors px-3 py-2 text-sm font-medium">Nosotros</a>
+                        <a href="#contact"
+                            class="bg-sga-cyan/10 hover:bg-sga-cyan/20 text-sga-cyan border border-sga-cyan/50 px-4 py-2 rounded-full text-sm font-medium transition-all">Contratar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 relative z-10 text-center">
+            <span
+                class="inline-block py-1 px-3 rounded-full bg-sga-cyan/10 border border-sga-cyan/30 text-sga-cyan text-sm font-semibold mb-6">
+                Intelligence & Efficiency
+            </span>
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-white">
+                El Futuro de la <br />
+                <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-sga-cyan via-blue-400 to-sga-green text-glow">
+                    Energía está en el Dato
+                </span>
+            </h1>
+            <p class="mt-4 text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                Transformamos el consumo energético en inteligencia de negocio. SGA DATA ofrece certificación avanzada y
+                sensorización IoT.
+            </p>
+            <div class="flex justify-center gap-4 mb-20">
+                <button
+                    class="bg-sga-cyan hover:bg-cyan-400 text-sga-navy font-bold py-3 px-8 rounded-full transition-all shadow-lg shadow-sga-cyan/20 flex items-center gap-2">
+                    Solicitar Auditoría <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Mock Dashboard -->
+            <div
+                class="rounded-2xl border border-white/10 shadow-2xl glass-card overflow-hidden max-w-5xl mx-auto text-left">
+                <div class="bg-sga-card/80 p-4 border-b border-white/5 flex items-center gap-4">
+                    <div class="flex gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div class="bg-white/5 px-4 py-1 rounded-md text-xs text-gray-400 font-mono">dashboard.sgadata.com
+                    </div>
+                </div>
+                <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="col-span-2 relative h-64 border border-sga-cyan/10 rounded-xl p-4 flex items-end justify-between bg-gradient-to-t from-sga-cyan/5 to-transparent">
+                        <div class="w-full bg-sga-cyan/50 rounded-t-sm mx-1 h-2/5"></div>
+                        <div class="w-full bg-sga-cyan/50 rounded-t-sm mx-1 h-3/5"></div>
+                        <div class="w-full bg-sga-cyan/50 rounded-t-sm mx-1 h-2/5"></div>
+                        <div class="w-full bg-sga-cyan/50 rounded-t-sm mx-1 h-4/5"></div>
+                        <div class="w-full bg-sga-cyan/50 rounded-t-sm mx-1 h-3/5"></div>
+                        <div class="w-full bg-sga-cyan/50 rounded-t-sm mx-1 h-full"></div>
+                        <div class="w-full bg-sga-cyan/50 rounded-t-sm mx-1 h-4/5"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+                            <div class="text-sm text-gray-400">Eficiencia Actual</div>
+                            <div class="text-3xl font-bold text-sga-green mt-1">94.2%</div>
+                            <div class="text-xs text-green-400 flex items-center gap-1 mt-1">
+                                <i data-lucide="zap" class="w-3 h-3"></i> +12% vs mes anterior
+                            </div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+                            <div class="text-sm text-gray-400">Ahorro Estimado</div>
+                            <div class="text-3xl font-bold text-white mt-1">€2,450</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="py-24 bg-sga-card/30">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">Nuestros Servicios</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Soluciones integrales desde el hardware hasta el dato.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="p-3 bg-white/5 rounded-lg w-fit mb-4"><i data-lucide="zap"
+                            class="text-sga-cyan w-8 h-8"></i></div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Certificación Energética</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Análisis exhaustivo y certificación oficial para
+                        hogares y comercios.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="p-3 bg-white/5 rounded-lg w-fit mb-4"><i data-lucide="cpu"
+                            class="text-sga-green w-8 h-8"></i></div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Infraestructura IoT</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Instalación de sensores inteligentes y medidores de
+                        última generación.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="p-3 bg-white/5 rounded-lg w-fit mb-4"><i data-lucide="bar-chart-3"
+                            class="text-blue-400 w-8 h-8"></i></div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Dashboard Analítico</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Plataforma exclusiva para clientes y técnicos.
+                        Visualiza tu consumo.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="p-3 bg-white/5 rounded-lg w-fit mb-4"><i data-lucide="database"
+                            class="text-purple-400 w-8 h-8"></i></div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Big Data & Banca</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Sistemas preparados para gestionar datos
+                        financieros complejos y seguros.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-white/5 bg-sga-navy text-gray-400 text-sm text-center">
+        <p>SGA DATA © 2025. Powered by Intelligence.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
