@@ -211,6 +211,12 @@ function Services() {
             title: "Big Data & Banca",
             desc: "Escalabilidad asegurada. Nuestros sistemas están preparados para gestionar datos financieros complejos, ofreciendo seguridad de grado bancario.",
             benefits: ["Seguridad encriptada", "Escalabilidad infinita", "Integración API"]
+        },
+        {
+            icon: <ShieldCheck className="w-8 h-8 text-yellow-400" />,
+            title: "Instalación Técnica",
+            desc: "Equipo propio de técnicos certificados para el despliegue de hardware. Garantizamos una integración perfecta sin interrumpir tu operativa diaria.",
+            benefits: ["Técnicos Certificados", "Puesta en marcha garantizada", "Soporte post-venta"]
         }
     ];
 
@@ -299,6 +305,14 @@ function Products({ addToCart }) {
             image: prodMeter,
             category: "Medición",
             desc: "Medición precisa de consumo en tiempo real para industria."
+        },
+        {
+            id: 5,
+            name: "Servicio de Instalación",
+            price: 150,
+            image: "https://placehold.co/600x400/0f172a/facc15?text=Instalacion+Tecnica",
+            category: "Servicios",
+            desc: "Despliegue y configuración in-situ por técnicos certificados."
         }
     ];
 
