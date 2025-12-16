@@ -25,6 +25,7 @@ import prodRouter from './assets/prod_router.png';
 import prodSensor from './assets/prod_sensor.png';
 import prodGateway from './assets/prod_gateway.png';
 import prodMeter from './assets/prod_meter.png';
+import prodService from './assets/prod_service.jpg';
 
 function Navbar({ cartCount, openCart }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -310,7 +311,7 @@ function Products({ addToCart }) {
             id: 5,
             name: "Servicio de Instalación",
             price: 150,
-            image: "https://placehold.co/600x400/0f172a/facc15?text=Instalacion+Tecnica",
+            image: prodService,
             category: "Servicios",
             desc: "Despliegue y configuración in-situ por técnicos certificados."
         }
