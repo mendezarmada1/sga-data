@@ -659,7 +659,97 @@ function Contact({ prefilledMessage }) {
     );
 }
 
-function Footer() {
+// Legal Content Constants
+const LEGAL_CONTENT = {
+    privacy: {
+        title: "Política de Privacidad",
+        content: (
+            <div className="space-y-4">
+                <p>En SGA DATA (en adelante, "nosotros", "nuestro"), nos tomamos muy en serio la privacidad de nuestros usuarios. Esta Política de Privacidad describe cómo recopilamos, usamos y protegemos su información personal.</p>
+                <h4 className="font-bold text-sga-cyan">1. Responsable del Tratamiento</h4>
+                <p>SGA DATA actúa como responsable del tratamiento de los datos personales recabados a través de este sitio web. Para cualquier consulta, puede contactar con nosotros en: soporte@sgadata.com.</p>
+                <h4 className="font-bold text-sga-cyan">2. Datos Recopilados</h4>
+                <p>Recopilamos únicamente los datos necesarios para gestionar sus solicitudes de contacto y pedidos: Nombre, Correo Electrónico, Teléfono y detalles del pedido. No almacenamos datos de pago en este sitio.</p>
+                <h4 className="font-bold text-sga-cyan">3. Uso de la Información</h4>
+                <p>Sus datos se utilizan exclusivamente para: responder a sus consultas, procesar solicitudes de presupuesto y gestionar la instalación de equipos si así lo requiere.</p>
+                <h4 className="font-bold text-sga-cyan">4. Cesión a Terceros</h4>
+                <p>No vendemos, intercambiamos ni transferimos sus datos personales a terceros, salvo obligación legal.</p>
+            </div>
+        )
+    },
+    terms: {
+        title: "Términos de Servicio",
+        content: (
+            <div className="space-y-4">
+                <p>Bienvenido a SGA DATA. Al acceder a nuestro sitio web, acepta los siguientes términos y condiciones.</p>
+                <h4 className="font-bold text-sga-cyan">1. Propiedad Intelectual</h4>
+                <p>Todo el contenido de este sitio (textos, gráficos, logotipos, imágenes y código) es propiedad exclusiva de SGA DATA o sus licenciantes y está protegido por las leyes de propiedad intelectual.</p>
+                <h4 className="font-bold text-sga-cyan">2. Uso Permitido</h4>
+                <p>Usted se compromete a utilizar el sitio únicamente con fines legales y de manera que no infrinja los derechos de, restrinja o inhiba el uso y disfrute del sitio por parte de terceros.</p>
+                <h4 className="font-bold text-sga-cyan">3. Limitación de Responsabilidad</h4>
+                <p>SGA DATA no se hace responsable de daños directos, indirectos, incidentales o consecuentes derivados del uso o imposibilidad de uso de este sitio web.</p>
+                <h4 className="font-bold text-sga-cyan">4. Modificaciones</h4>
+                <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. El uso continuado del sitio tras la publicación de cambios constituirá su aceptación de los mismos.</p>
+            </div>
+        )
+    },
+    support: {
+        title: "Centro de Soporte",
+        content: (
+            <div className="space-y-4">
+                <p>¿Necesita ayuda con sus equipos o tiene alguna incidencia? Estamos aquí para ayudarle.</p>
+                <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+                    <h4 className="font-bold text-sga-cyan mb-2">Canales de Contacto</h4>
+                    <ul className="space-y-2 text-sm">
+                        <li>📧 <strong>Email:</strong> soporte@sgadata.com</li>
+                        <li>📞 <strong>Teléfono Urgencias 24/7:</strong> +34 900 000 000 (Solo clientes con mantenimiento)</li>
+                        <li>🏢 <strong>Oficinas:</strong> Lunes a Viernes de 9:00 a 18:00</li>
+                    </ul>
+                </div>
+                <h4 className="font-bold text-sga-cyan">Preguntas Frecuentes (FAQ)</h4>
+                <ul className="list-disc pl-5 space-y-2 text-sm">
+                    <li><strong>¿Cuánto tardan los envíos?</strong> Entre 24 y 72 horas para stock disponible.</li>
+                    <li><strong>¿Ofrecen garantía?</strong> Todos nuestros equipos industriales tienen 3 años de garantía oficial.</li>
+                    <li><strong>¿Cómo solicito una instalación?</strong> Puede añadir el servicio al carrito o contactarnos directamente tras la compra del equipo.</li>
+                </ul>
+            </div>
+        )
+    }
+};
+
+const LegalModal = ({ isOpen, type, onClose }) => {
+    if (!isOpen || !type) return null;
+    const content = LEGAL_CONTENT[type];
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={onClose}>
+            <div
+                className="bg-sga-card border border-white/20 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-200"
+                onClick={e => e.stopPropagation()}
+            >
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/40 rounded-t-2xl">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <ShieldCheck className="text-sga-cyan w-5 h-5" />
+                        {content.title}
+                    </h2>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full">
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="p-6 overflow-y-auto custom-scrollbar text-gray-300 leading-relaxed text-sm md:text-base">
+                    {content.content}
+                </div>
+                <div className="p-6 border-t border-white/10 bg-black/20 flex justify-end rounded-b-2xl">
+                    <button onClick={onClose} className="px-6 py-2 bg-sga-cyan/10 hover:bg-sga-cyan hover:text-sga-navy text-sga-cyan font-semibold rounded-lg transition-colors">
+                        Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+function Footer({ openModal }) {
     return (
         <footer className="py-12 border-t border-white/5 bg-sga-navy/80 text-gray-400 text-sm relative z-10 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -668,9 +758,9 @@ function Footer() {
                     <span className="font-semibold text-white">SGA DATA © 2025</span>
                 </div>
                 <div className="flex gap-6">
-                    <a href="#" className="hover:text-white transition-colors">Política de Privacidad</a>
-                    <a href="#" className="hover:text-white transition-colors">Términos de Servicio</a>
-                    <a href="#" className="hover:text-white transition-colors">Soporte</a>
+                    <button onClick={() => openModal('privacy')} className="hover:text-white transition-colors text-left uppercase text-xs tracking-wider">Política de Privacidad</button>
+                    <button onClick={() => openModal('terms')} className="hover:text-white transition-colors text-left uppercase text-xs tracking-wider">Términos de Servicio</button>
+                    <button onClick={() => openModal('support')} className="hover:text-white transition-colors text-left uppercase text-xs tracking-wider">Soporte</button>
                 </div>
             </div>
         </footer>
@@ -681,6 +771,7 @@ export default function App() {
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [checkoutMessage, setCheckoutMessage] = useState('');
+    const [activeModal, setActiveModal] = useState(null); // 'privacy', 'terms', 'support', null
 
     const addToCart = (product) => {
         setCart(prev => {
@@ -724,6 +815,11 @@ export default function App() {
                 updateQuantity={updateQuantity}
                 checkout={handleCheckout}
             />
+            <LegalModal
+                isOpen={!!activeModal}
+                type={activeModal}
+                onClose={() => setActiveModal(null)}
+            />
             <main>
                 <Hero />
                 <Services />
@@ -731,7 +827,7 @@ export default function App() {
                 <About />
                 <Contact prefilledMessage={checkoutMessage} />
             </main>
-            <Footer />
+            <Footer openModal={setActiveModal} />
         </div>
     );
 }
