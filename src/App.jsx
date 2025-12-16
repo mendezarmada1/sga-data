@@ -383,13 +383,13 @@ function Contact() {
                             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <CheckCircle2 className="w-10 h-10 text-green-500" />
                             </div>
-                            <h3 className="text-2xl font-bold text-white mb-2">¡Redactando Correo!</h3>
-                            <p className="text-gray-400">Hemos abierto tu gestor de correo para que envíes el mensaje.</p>
+                            <h3 className="text-2xl font-bold text-white mb-2">¡Mensaje Enviado!</h3>
+                            <p className="text-gray-400">Hemos recibido tu solicitud correctamente. Nos pondremos en contacto contigo a la brevedad.</p>
                             <button
                                 onClick={() => setFormStatus('idle')}
                                 className="mt-8 text-sga-cyan hover:underline"
                             >
-                                Volver al formulario
+                                Enviar otro mensaje
                             </button>
                         </div>
                     ) : (
