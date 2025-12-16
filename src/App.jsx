@@ -11,13 +11,18 @@ import {
     Menu,
     X,
     ArrowRight,
-    CheckCircle2
+    CheckCircle2,
+    ShoppingCart,
+    Trash2,
+    Plus,
+    Minus,
+    Package
 } from 'lucide-react';
 import Background from './Background';
 
 import logo from './assets/logo.png';
 
-function Navbar() {
+function Navbar({ cartCount, openCart }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const scrollToSection = (id) => {
@@ -37,15 +42,32 @@ function Navbar() {
                         <span className="text-2xl font-bold tracking-tighter text-white">SGA <span className="text-sga-cyan">DATA</span></span>
                     </div>
                     <div className="hidden md:block">
-                        <div className="ml-10 flex items-baseline space-x-8">
+                        <div className="ml-10 flex items-center space-x-8">
                             <button onClick={() => scrollToSection('services')} className="hover:text-sga-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium">Servicios</button>
+                            <button onClick={() => scrollToSection('products')} className="hover:text-sga-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium">Productos</button>
                             <button onClick={() => scrollToSection('about')} className="hover:text-sga-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium">Nosotros</button>
                             <button onClick={() => scrollToSection('contact')} className="bg-sga-cyan/10 hover:bg-sga-cyan/20 text-sga-cyan border border-sga-cyan/50 px-4 py-2 rounded-full text-sm font-medium transition-all">
                                 Contratar
                             </button>
+                            <button onClick={openCart} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
+                                <ShoppingCart className="w-6 h-6 text-white" />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-sga-cyan text-sga-navy text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </button>
                         </div>
                     </div>
-                    <div className="-mr-2 flex md:hidden">
+                    <div className="-mr-2 flex md:hidden items-center gap-4">
+                        <button onClick={openCart} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
+                            <ShoppingCart className="w-6 h-6 text-white" />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-sga-cyan text-sga-navy text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </button>
                         <button onClick={() => setIsOpen(!isOpen)} className="text-gray-300 hover:text-white p-2">
                             {isOpen ? <X /> : <Menu />}
                         </button>
@@ -56,6 +78,7 @@ function Navbar() {
                 <div className="md:hidden glass border-b border-white/5">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         <button onClick={() => scrollToSection('services')} className="text-gray-300 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">Servicios</button>
+                        <button onClick={() => scrollToSection('products')} className="text-gray-300 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">Productos</button>
                         <button onClick={() => scrollToSection('about')} className="text-gray-300 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">Nosotros</button>
                         <button onClick={() => scrollToSection('contact')} className="text-sga-cyan block w-full text-left px-3 py-2 rounded-md text-base font-medium">Contratar</button>
                     </div>
@@ -239,6 +262,95 @@ function Services() {
     );
 }
 
+function Products({ addToCart }) {
+    const products = [
+        {
+            id: 1,
+            name: "Router Industrial MTX-4G",
+            price: 289,
+            image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=600",
+            category: "Conectividad",
+            desc: "Router 4G LTE industrial robusto con doble SIM y GPS."
+        },
+        {
+            id: 2,
+            name: "Sensor IoT LoRaWAN Temp/Hum",
+            price: 145,
+            image: "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?auto=format&fit=crop&q=80&w=600",
+            category: "Sensores",
+            desc: "Sensor de temperatura y humedad de largo alcance."
+        },
+        {
+            id: 3,
+            name: "Gateway Edge Computing 5G",
+            price: 850,
+            image: "https://images.unsplash.com/photo-1531771686035-25f475954919?auto=format&fit=crop&q=80&w=600",
+            category: "Gateways",
+            desc: "Procesamiento local con conectividad 5G ultrarrápida."
+        },
+        {
+            id: 4,
+            name: "Medidor Eléctrico Trifásico",
+            price: 320,
+            image: "https://images.unsplash.com/photo-1555664424-778a69032054?auto=format&fit=crop&q=80&w=600",
+            category: "Medición",
+            desc: "Medición precisa de consumo en tiempo real para industria."
+        }
+    ];
+
+    return (
+        <section id="products" className="py-24 relative bg-black/20">
+            <div className="max-w-7xl mx-auto px-4 z-10 relative">
+                <div className="text-center mb-16">
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-3xl md:text-5xl font-bold mb-4"
+                    >
+                        Marketplace <span className="text-sga-cyan">Hardware</span>
+                    </motion.h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+                        Equipamiento industrial certificado para tus proyectos IoT.
+                    </p>
+                </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {products.map((p, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            whileHover={{ y: -5 }}
+                            className="glass-card rounded-2xl overflow-hidden flex flex-col group border border-white/5 hover:border-sga-cyan/50"
+                        >
+                            <div className="h-48 overflow-hidden relative">
+                                <img src={p.image} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <div className="absolute top-2 right-2 bg-sga-navy/80 px-2 py-1 rounded text-xs text-sga-cyan font-bold border border-sga-cyan/20">
+                                    {p.category}
+                                </div>
+                            </div>
+                            <div className="p-4 flex flex-col flex-grow">
+                                <h3 className="font-bold text-white mb-1">{p.name}</h3>
+                                <p className="text-xs text-gray-400 mb-4 flex-grow">{p.desc}</p>
+                                <div className="flex items-center justify-between mt-auto">
+                                    <span className="text-xl font-bold text-sga-green">{p.price}€</span>
+                                    <button
+                                        onClick={() => addToCart(p)}
+                                        className="bg-white/10 hover:bg-sga-cyan hover:text-sga-navy text-white p-2 rounded-lg transition-colors"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
 function About() {
     return (
         <section id="about" className="py-24 relative overflow-hidden">
@@ -311,14 +423,77 @@ function About() {
     );
 }
 
-function Contact() {
+const CartDrawer = ({ isOpen, onClose, cart, updateQuantity, checkout }) => {
+    const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    return (
+        <>
+            {isOpen && <div className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm" onClick={onClose} />}
+            <div className={`fixed top-0 right-0 h-full w-full max-w-md bg-sga-card border-l border-white/10 z-[70] transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
+                <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                    <h2 className="text-xl font-bold flex items-center gap-2">
+                        <ShoppingCart className="text-sga-cyan" /> Tu Pedido
+                    </h2>
+                    <button onClick={onClose} className="hover:text-red-400 transition-colors"><X /></button>
+                </div>
+
+                <div className="flex-grow overflow-y-auto p-6 space-y-4">
+                    {cart.length === 0 ? (
+                        <div className="text-center text-gray-500 mt-20">
+                            <Package className="w-16 h-16 mx-auto mb-4 opacity-20" />
+                            <p>Tu carrito está vacío</p>
+                        </div>
+                    ) : (
+                        cart.map((item) => (
+                            <div key={item.id} className="flex gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                                <img src={item.image} className="w-16 h-16 object-cover rounded-lg bg-black/20" />
+                                <div className="flex-grow">
+                                    <h4 className="font-medium text-sm text-white">{item.name}</h4>
+                                    <p className="text-sga-green font-bold text-sm">{item.price}€</p>
+                                    <div className="flex items-center gap-3 mt-2">
+                                        <button onClick={() => updateQuantity(item.id, -1)} className="bg-white/10 w-6 h-6 rounded flex items-center justify-center hover:bg-white/20"><Minus className="w-3 h-3" /></button>
+                                        <span className="text-sm">{item.quantity}</span>
+                                        <button onClick={() => updateQuantity(item.id, 1)} className="bg-white/10 w-6 h-6 rounded flex items-center justify-center hover:bg-white/20"><Plus className="w-3 h-3" /></button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                <div className="p-6 border-t border-white/10 bg-black/20">
+                    <div className="flex justify-between items-center mb-6 text-xl font-bold">
+                        <span>Total</span>
+                        <span className="text-sga-cyan">{total.toFixed(2)}€</span>
+                    </div>
+                    <button
+                        onClick={checkout}
+                        disabled={cart.length === 0}
+                        className="w-full bg-sga-cyan hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-sga-navy font-bold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2"
+                    >
+                        Tramitar Pedido <ArrowRight className="w-5 h-5" />
+                    </button>
+                    <p className="text-xs text-center text-gray-500 mt-3">El pago se gestionará tras confirmar disponibilidad.</p>
+                </div>
+            </div>
+        </>
+    );
+};
+
+function Contact({ prefilledMessage }) {
     const [formStatus, setFormStatus] = useState('idle'); // idle, submitting, success
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
-        message: ''
+        message: prefilledMessage || ''
     });
+
+    React.useEffect(() => {
+        if (prefilledMessage) {
+            setFormData(prev => ({ ...prev, message: prefilledMessage }));
+        }
+    }, [prefilledMessage]);
 
     const handleChange = (e) => {
         setFormData({
@@ -484,15 +659,58 @@ function Footer() {
 }
 
 export default function App() {
+    const [cart, setCart] = useState([]);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const [checkoutMessage, setCheckoutMessage] = useState('');
+
+    const addToCart = (product) => {
+        setCart(prev => {
+            const existing = prev.find(item => item.id === product.id);
+            if (existing) {
+                return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+            }
+            return [...prev, { ...product, quantity: 1 }];
+        });
+        setIsCartOpen(true);
+    };
+
+    const updateQuantity = (id, delta) => {
+        setCart(prev => prev.map(item => {
+            if (item.id === id) {
+                const newQty = Math.max(0, item.quantity + delta);
+                return { ...item, quantity: newQty };
+            }
+            return item;
+        }).filter(item => item.quantity > 0));
+    };
+
+    const handleCheckout = () => {
+        const lines = cart.map(item => `- ${item.quantity}x ${item.name} (${item.price}€)`);
+        const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const msg = `SOLICITUD DE PEDIDO:\n\n${lines.join('\n')}\n\nTOTAL ESTIMADO: ${total.toFixed(2)}€\n\nPor favor, contactad conmigo para finalizar el pago y envío.`;
+
+        setCheckoutMessage(msg);
+        setIsCartOpen(false);
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    };
+
     return (
         <div className="min-h-screen text-white selection:bg-sga-cyan selection:text-sga-navy overflow-x-hidden">
             <Background />
-            <Navbar />
+            <Navbar cartCount={cart.reduce((a, b) => a + b.quantity, 0)} openCart={() => setIsCartOpen(true)} />
+            <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+                cart={cart}
+                updateQuantity={updateQuantity}
+                checkout={handleCheckout}
+            />
             <main>
                 <Hero />
                 <Services />
+                <Products addToCart={addToCart} />
                 <About />
-                <Contact />
+                <Contact prefilledMessage={checkoutMessage} />
             </main>
             <Footer />
         </div>
