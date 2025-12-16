@@ -316,6 +316,7 @@ function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         message: ''
     });
 
@@ -326,20 +327,30 @@ function Contact() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setFormStatus('submitting');
 
-        // Construct mailto link
-        const subject = `Solicitud de Auditoría - ${formData.name}`;
-        const body = `Nombre: ${formData.name}%0D%0ACorreo: ${formData.email}%0D%0A%0D%0AMensaje:%0D%0A${formData.message}`;
-        const mailtoLink = `mailto:mendezarmadasebastianjose@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+        try {
+            const response = await fetch("https://formspree.io/f/xnnekjvz", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
 
-        // Simulate sending delay for UX then open mail client
-        setTimeout(() => {
-            setFormStatus('success');
-            window.location.href = mailtoLink;
-        }, 1000);
+            if (response.ok) {
+                setFormStatus('success');
+                setFormData({ name: '', email: '', phone: '', message: '' }); // Clear form
+            } else {
+                alert("Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.");
+                setFormStatus('idle');
+            }
+        } catch (error) {
+            alert("Error de conexión. Por favor, verifica tu internet.");
+            setFormStatus('idle');
+        }
     };
 
     return (
@@ -408,6 +419,17 @@ function Contact() {
                                         placeholder="juan@empresa.com"
                                     />
                                 </div>
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-400 mb-2">Teléfono Móvil</label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    className="w-full bg-sga-navy/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-sga-cyan focus:ring-1 focus:ring-sga-cyan outline-none transition-all placeholder:text-gray-600"
+                                    placeholder="+34 600 000 000"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-2">Mensaje</label>
