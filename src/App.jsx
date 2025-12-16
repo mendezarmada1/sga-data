@@ -268,7 +268,7 @@ function Products({ addToCart }) {
             id: 1,
             name: "Router Industrial MTX-4G",
             price: 289,
-            image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=600",
+            image: "https://placehold.co/600x400/0f172a/06b6d4?text=Router+SGA+4G",
             category: "Conectividad",
             desc: "Router 4G LTE industrial robusto con doble SIM y GPS."
         },
@@ -276,7 +276,7 @@ function Products({ addToCart }) {
             id: 2,
             name: "Sensor IoT LoRaWAN Temp/Hum",
             price: 145,
-            image: "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?auto=format&fit=crop&q=80&w=600",
+            image: "https://placehold.co/600x400/0f172a/22c55e?text=Sensor+IoT",
             category: "Sensores",
             desc: "Sensor de temperatura y humedad de largo alcance."
         },
@@ -284,7 +284,7 @@ function Products({ addToCart }) {
             id: 3,
             name: "Gateway Edge Computing 5G",
             price: 850,
-            image: "https://images.unsplash.com/photo-1531771686035-25f475954919?auto=format&fit=crop&q=80&w=600",
+            image: "https://placehold.co/600x400/0f172a/3b82f6?text=Edge+Gateway",
             category: "Gateways",
             desc: "Procesamiento local con conectividad 5G ultrarrápida."
         },
@@ -292,7 +292,7 @@ function Products({ addToCart }) {
             id: 4,
             name: "Medidor Eléctrico Trifásico",
             price: 320,
-            image: "https://images.unsplash.com/photo-1555664424-778a69032054?auto=format&fit=crop&q=80&w=600",
+            image: "https://placehold.co/600x400/0f172a/a855f7?text=Medidor+Trifasico",
             category: "Medición",
             desc: "Medición precisa de consumo en tiempo real para industria."
         }
