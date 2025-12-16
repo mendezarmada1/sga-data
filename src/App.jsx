@@ -313,14 +313,33 @@ function About() {
 
 function Contact() {
     const [formStatus, setFormStatus] = useState('idle'); // idle, submitting, success
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setFormStatus('submitting');
-        // Simulate sending
+
+        // Construct mailto link
+        const subject = `Solicitud de Auditoría - ${formData.name}`;
+        const body = `Nombre: ${formData.name}%0D%0ACorreo: ${formData.email}%0D%0A%0D%0AMensaje:%0D%0A${formData.message}`;
+        const mailtoLink = `mailto:mendezarmadasebastianjose@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+
+        // Simulate sending delay for UX then open mail client
         setTimeout(() => {
             setFormStatus('success');
-        }, 1500);
+            window.location.href = mailtoLink;
+        }, 1000);
     };
 
     return (
@@ -353,13 +372,13 @@ function Contact() {
                             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <CheckCircle2 className="w-10 h-10 text-green-500" />
                             </div>
-                            <h3 className="text-2xl font-bold text-white mb-2">¡Mensaje Enviado!</h3>
-                            <p className="text-gray-400">Gracias por contactarnos. Uno de nuestros consultores se pondrá en contacto contigo en menos de 24 horas.</p>
+                            <h3 className="text-2xl font-bold text-white mb-2">¡Redactando Correo!</h3>
+                            <p className="text-gray-400">Hemos abierto tu gestor de correo para que envíes el mensaje.</p>
                             <button
                                 onClick={() => setFormStatus('idle')}
                                 className="mt-8 text-sga-cyan hover:underline"
                             >
-                                Enviar otro mensaje
+                                Volver al formulario
                             </button>
                         </div>
                     ) : (
@@ -367,16 +386,40 @@ function Contact() {
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-2">Nombre Completo</label>
-                                    <input required type="text" className="w-full bg-sga-navy/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-sga-cyan focus:ring-1 focus:ring-sga-cyan outline-none transition-all placeholder:text-gray-600" placeholder="Juan Pérez" />
+                                    <input
+                                        required
+                                        type="text"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        className="w-full bg-sga-navy/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-sga-cyan focus:ring-1 focus:ring-sga-cyan outline-none transition-all placeholder:text-gray-600"
+                                        placeholder="Juan Pérez"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-2">Correo Corporativo</label>
-                                    <input required type="email" className="w-full bg-sga-navy/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-sga-cyan focus:ring-1 focus:ring-sga-cyan outline-none transition-all placeholder:text-gray-600" placeholder="juan@empresa.com" />
+                                    <input
+                                        required
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className="w-full bg-sga-navy/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-sga-cyan focus:ring-1 focus:ring-sga-cyan outline-none transition-all placeholder:text-gray-600"
+                                        placeholder="juan@empresa.com"
+                                    />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-2">Mensaje</label>
-                                <textarea required rows="4" className="w-full bg-sga-navy/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-sga-cyan focus:ring-1 focus:ring-sga-cyan outline-none transition-all placeholder:text-gray-600" placeholder="Estoy interesado en reducir mi consumo energético..."></textarea>
+                                <textarea
+                                    required
+                                    rows="4"
+                                    name="message"
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    className="w-full bg-sga-navy/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-sga-cyan focus:ring-1 focus:ring-sga-cyan outline-none transition-all placeholder:text-gray-600"
+                                    placeholder="Estoy interesado en reducir mi consumo energético..."
+                                ></textarea>
                             </div>
                             <button
                                 disabled={formStatus === 'submitting'}
@@ -384,7 +427,7 @@ function Contact() {
                                 className="w-full bg-sga-cyan hover:bg-cyan-400 text-sga-navy font-bold py-4 rounded-xl transition-all shadow-lg shadow-sga-cyan/20 flex justify-center items-center gap-2 transform active:scale-[0.99]"
                             >
                                 {formStatus === 'submitting' ? (
-                                    <span className="animate-pulse">Enviando...</span>
+                                    <span className="animate-pulse">Preparando...</span>
                                 ) : (
                                     <>Enviar Mensaje <ArrowRight className="w-5 h-5" /></>
                                 )}
