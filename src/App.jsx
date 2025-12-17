@@ -935,19 +935,34 @@ function Footer({ openModal }) {
     );
 }
 
+
+import { AuthProvider, useAuth } from './AuthContext';
+
 // --- DASHBOARD COMPONENTS ---
 
 function LoginPage({ onLogin, onBack }) {
-    const [role, setRole] = useState('client'); // 'client' or 'tech'
+    const [role, setRole] = useState('client');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const { login } = useAuth();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        if (!email || !password) return setError('Rellena todos los campos');
+
+        try {
+            setError('');
+            setLoading(true);
+            await login(email, password);
             onLogin(role);
-        }, 1500);
+        } catch (err) {
+            console.error("Login Error:", err);
+            setError('Error de acceso. Verifica usuario/contraseña.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -961,56 +976,34 @@ function LoginPage({ onLogin, onBack }) {
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-2xl animate-in fade-in zoom-in duration-500">
+
+                    {error && <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded text-red-200 text-sm text-center">{error}</div>}
+
                     <div className="flex bg-black/40 p-1 rounded-lg mb-8">
-                        <button
-                            onClick={() => setRole('client')}
-                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'client' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-                        >
-                            <span className="flex items-center justify-center gap-2">
-                                <BarChart3 className="w-4 h-4" /> Cliente
-                            </span>
+                        <button onClick={() => setRole('client')} className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'client' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}>
+                            <span className="flex items-center justify-center gap-2"><BarChart3 className="w-4 h-4" /> Cliente</span>
                         </button>
-                        <button
-                            onClick={() => setRole('tech')}
-                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'tech' ? 'bg-sga-cyan/20 text-sga-cyan shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-                        >
-                            <span className="flex items-center justify-center gap-2">
-                                <Cpu className="w-4 h-4" /> Técnico
-                            </span>
+                        <button onClick={() => setRole('tech')} className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'tech' ? 'bg-sga-cyan/20 text-sga-cyan shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}>
+                            <span className="flex items-center justify-center gap-2"><Cpu className="w-4 h-4" /> Técnico</span>
                         </button>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Usuario</label>
-                            <input
-                                type="text"
-                                defaultValue="demo"
-                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors"
-                            />
+                            <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Email</label>
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors" placeholder="usuario@sga.com" />
                         </div>
                         <div>
                             <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Contraseña</label>
-                            <input
-                                type="password"
-                                defaultValue="password"
-                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors"
-                            />
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors" placeholder="••••••••" />
                         </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-sga-cyan hover:bg-cyan-400 text-sga-navy font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        <button type="submit" disabled={loading} className="w-full bg-sga-cyan hover:bg-cyan-400 text-sga-navy font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50">
                             {loading ? <Activity className="w-5 h-5 animate-spin" /> : 'Acceder al Sistema'}
                         </button>
                     </form>
 
                     <div className="mt-6 pt-6 border-t border-white/5 text-center">
-                        <button onClick={onBack} className="text-gray-500 hover:text-white text-sm transition-colors">
-                            ← Volver al sitio web
-                        </button>
+                        <button onClick={onBack} className="text-gray-500 hover:text-white text-sm transition-colors">← Volver al sitio web</button>
                     </div>
                 </div>
             </div>
@@ -1019,6 +1012,14 @@ function LoginPage({ onLogin, onBack }) {
 }
 
 export default function App() {
+    return (
+        <AuthProvider>
+            <AppContent />
+        </AuthProvider>
+    );
+}
+
+function AppContent() {
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [checkoutMessage, setCheckoutMessage] = useState('');
