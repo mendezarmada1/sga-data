@@ -967,7 +967,7 @@ function LoginPage({ onLogin, onBack }) {
                             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'client' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
                         >
                             <span className="flex items-center justify-center gap-2">
-                                <BarChart3 className="w-4 h-4" /> Gerencia
+                                <BarChart3 className="w-4 h-4" /> Cliente
                             </span>
                         </button>
                         <button
@@ -1090,6 +1090,8 @@ export default function App() {
             <main>
                 <Hero />
                 <Stats />
+                <PlatformFeatures />
+                <Services />
                 <Products addToCart={addToCart} />
                 <About />
                 <Contact prefilledMessage={checkoutMessage} />
