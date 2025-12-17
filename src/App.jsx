@@ -57,25 +57,9 @@ function Navbar({ cartCount, openCart, onOpenLogin }) {
                             <button onClick={onOpenLogin} className="bg-white/5 hover:bg-white/10 text-white border border-white/20 px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2">
                                 <ShieldCheck className="w-4 h-4 text-sga-cyan" /> Área Socios
                             </button>
-                            <button onClick={openCart} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
-                                <ShoppingCart className="w-6 h-6 text-white" />
-                                {cartCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-sga-cyan text-sga-navy text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                        {cartCount}
-                                    </span>
-                                )}
-                            </button>
                         </div>
                     </div>
                     <div className="-mr-2 flex md:hidden items-center gap-4">
-                        <button onClick={openCart} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
-                            <ShoppingCart className="w-6 h-6 text-white" />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-sga-cyan text-sga-navy text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </button>
                         <button onClick={() => setIsOpen(!isOpen)} className="text-gray-300 hover:text-white p-2">
                             {isOpen ? <X /> : <Menu />}
                         </button>
@@ -88,7 +72,9 @@ function Navbar({ cartCount, openCart, onOpenLogin }) {
                         <button onClick={() => scrollToSection('services')} className="text-gray-300 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">Servicios</button>
                         <button onClick={() => scrollToSection('products')} className="text-gray-300 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">Productos</button>
                         <button onClick={() => scrollToSection('about')} className="text-gray-300 hover:text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium">Nosotros</button>
-                        <button onClick={() => scrollToSection('contact')} className="text-sga-cyan block w-full text-left px-3 py-2 rounded-md text-base font-medium">Contratar</button>
+                        <button onClick={() => { setIsOpen(false); onOpenLogin(); }} className="text-sga-cyan block w-full text-left px-3 py-2 rounded-md text-base font-medium flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4" /> Área Socios
+                        </button>
                     </div>
                 </div>
             )}
