@@ -27,7 +27,10 @@ import prodGateway from './assets/prod_gateway.png';
 import prodMeter from './assets/prod_meter.png';
 import prodService from './assets/prod_service.jpg';
 
-function Navbar({ cartCount, openCart }) {
+import ClientDashboard from './ClientDashboard';
+import TechDashboard from './TechDashboard';
+
+function Navbar({ cartCount, openCart, onOpenLogin }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const scrollToSection = (id) => {
@@ -51,8 +54,8 @@ function Navbar({ cartCount, openCart }) {
                             <button onClick={() => scrollToSection('services')} className="hover:text-sga-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium">Servicios</button>
                             <button onClick={() => scrollToSection('products')} className="hover:text-sga-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium">Productos</button>
                             <button onClick={() => scrollToSection('about')} className="hover:text-sga-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium">Nosotros</button>
-                            <button onClick={() => scrollToSection('contact')} className="bg-sga-cyan/10 hover:bg-sga-cyan/20 text-sga-cyan border border-sga-cyan/50 px-4 py-2 rounded-full text-sm font-medium transition-all">
-                                Contratar
+                            <button onClick={onOpenLogin} className="bg-white/5 hover:bg-white/10 text-white border border-white/20 px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2">
+                                <ShieldCheck className="w-4 h-4 text-sga-cyan" /> Área Socios
                             </button>
                             <button onClick={openCart} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
                                 <ShoppingCart className="w-6 h-6 text-white" />
@@ -946,13 +949,100 @@ function Footer({ openModal }) {
     );
 }
 
+// --- DASHBOARD COMPONENTS ---
+
+function LoginPage({ onLogin, onBack }) {
+    const [role, setRole] = useState('client'); // 'client' or 'tech'
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        // Simulate API call
+        setTimeout(() => {
+            onLogin(role);
+        }, 1500);
+    };
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
+            <Background />
+            <div className="relative z-10 w-full max-w-md p-8">
+                <div className="text-center mb-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                    <img src={logo} alt="SGA" className="h-12 w-12 mx-auto mb-4" />
+                    <h2 className="text-3xl font-bold tracking-tighter">SGA <span className="text-sga-cyan">CLOUD</span></h2>
+                    <p className="text-gray-400 mt-2">Plataforma de Gestión Inteligente</p>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-2xl animate-in fade-in zoom-in duration-500">
+                    <div className="flex bg-black/40 p-1 rounded-lg mb-8">
+                        <button
+                            onClick={() => setRole('client')}
+                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'client' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                        >
+                            <span className="flex items-center justify-center gap-2">
+                                <BarChart3 className="w-4 h-4" /> Gerencia
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setRole('tech')}
+                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'tech' ? 'bg-sga-cyan/20 text-sga-cyan shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                        >
+                            <span className="flex items-center justify-center gap-2">
+                                <Cpu className="w-4 h-4" /> Técnico
+                            </span>
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Usuario</label>
+                            <input
+                                type="text"
+                                defaultValue="demo"
+                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Contraseña</label>
+                            <input
+                                type="password"
+                                defaultValue="password"
+                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-sga-cyan hover:bg-cyan-400 text-sga-navy font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loading ? <Activity className="w-5 h-5 animate-spin" /> : 'Acceder al Sistema'}
+                        </button>
+                    </form>
+
+                    <div className="mt-6 pt-6 border-t border-white/5 text-center">
+                        <button onClick={onBack} className="text-gray-500 hover:text-white text-sm transition-colors">
+                            ← Volver al sitio web
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function App() {
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [checkoutMessage, setCheckoutMessage] = useState('');
-    const [activeModal, setActiveModal] = useState(null); // 'privacy', 'terms', 'support', null
+    const [activeModal, setActiveModal] = useState(null);
+
+    // View State: 'landing', 'login', 'client_dash', 'tech_dash'
+    const [view, setView] = useState('landing');
 
     const addToCart = (product) => {
+        if (view !== 'landing') return; // Safety
         setCart(prev => {
             const existing = prev.find(item => item.id === product.id);
             if (existing) {
@@ -982,10 +1072,23 @@ export default function App() {
         document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const handleLogin = (role) => {
+        if (role === 'client') setView('client_dash');
+        if (role === 'tech') setView('tech_dash');
+    };
+
+    if (view === 'login') return <LoginPage onLogin={handleLogin} onBack={() => setView('landing')} />;
+    if (view === 'client_dash') return <ClientDashboard onLogout={() => setView('landing')} />;
+    if (view === 'tech_dash') return <TechDashboard onLogout={() => setView('landing')} />;
+
     return (
         <div className="min-h-screen text-white selection:bg-sga-cyan selection:text-sga-navy overflow-x-hidden">
             <Background />
-            <Navbar cartCount={cart.reduce((a, b) => a + b.quantity, 0)} openCart={() => setIsCartOpen(true)} />
+            <Navbar
+                cartCount={cart.reduce((a, b) => a + b.quantity, 0)}
+                openCart={() => setIsCartOpen(true)}
+                onOpenLogin={() => setView('login')}
+            />
             <CartDrawer
                 isOpen={isCartOpen}
                 onClose={() => setIsCartOpen(false)}
@@ -1001,8 +1104,6 @@ export default function App() {
             <main>
                 <Hero />
                 <Stats />
-                <PlatformFeatures />
-                <Services />
                 <Products addToCart={addToCart} />
                 <About />
                 <Contact prefilledMessage={checkoutMessage} />
