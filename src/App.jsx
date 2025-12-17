@@ -349,16 +349,16 @@ function Products({ addToCart }) {
                                     {p.category}
                                 </div>
                             </div>
-                            <div className="p-4 flex flex-col flex-grow">
-                                <h3 className="font-bold text-white mb-1">{p.name}</h3>
-                                <p className="text-xs text-gray-400 mb-4 flex-grow">{p.desc}</p>
+                            <div className="p-5 flex flex-col flex-grow">
+                                <h3 className="font-bold text-lg mb-2">{p.name}</h3>
+                                <p className="text-gray-400 text-sm mb-4 flex-grow">{p.desc}</p>
                                 <div className="flex items-center justify-between mt-auto">
-                                    <span className="text-xl font-bold text-sga-green">{p.price}€</span>
                                     <button
                                         onClick={() => addToCart(p)}
-                                        className="bg-white/10 hover:bg-sga-cyan hover:text-sga-navy text-white p-2 rounded-lg transition-colors"
+                                        className="w-full bg-white/10 hover:bg-sga-cyan hover:text-sga-navy text-white p-2 rounded-lg transition-colors flex items-center justify-center gap-2 group-hover:bg-sga-cyan/20"
                                     >
-                                        <Plus className="w-5 h-5" />
+                                        <span>Solicitar Info</span>
+                                        <ArrowRight className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -468,7 +468,7 @@ const CartDrawer = ({ isOpen, onClose, cart, updateQuantity, checkout }) => {
                                 <img src={item.image} className="w-16 h-16 object-cover rounded-lg bg-black/20" />
                                 <div className="flex-grow">
                                     <h4 className="font-medium text-sm text-white">{item.name}</h4>
-                                    <p className="text-sga-green font-bold text-sm">{item.price}€</p>
+                                    <p className="text-sga-green font-bold text-sm">Consultar</p>
                                     <div className="flex items-center gap-3 mt-2">
                                         <button onClick={() => updateQuantity(item.id, -1)} className="bg-white/10 w-6 h-6 rounded flex items-center justify-center hover:bg-white/20"><Minus className="w-3 h-3" /></button>
                                         <span className="text-sm">{item.quantity}</span>
@@ -481,18 +481,14 @@ const CartDrawer = ({ isOpen, onClose, cart, updateQuantity, checkout }) => {
                 </div>
 
                 <div className="p-6 border-t border-white/10 bg-black/20">
-                    <div className="flex justify-between items-center mb-6 text-xl font-bold">
-                        <span>Total</span>
-                        <span className="text-sga-cyan">{total.toFixed(2)}€</span>
-                    </div>
                     <button
                         onClick={checkout}
                         disabled={cart.length === 0}
                         className="w-full bg-sga-cyan hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-sga-navy font-bold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2"
                     >
-                        Tramitar Pedido <ArrowRight className="w-5 h-5" />
+                        Solicitar Presupuesto <ArrowRight className="w-5 h-5" />
                     </button>
-                    <p className="text-xs text-center text-gray-500 mt-3">El pago se gestionará tras confirmar disponibilidad.</p>
+                    <p className="text-xs text-center text-gray-500 mt-3">Te contactaremos con la mejor oferta disponible.</p>
                 </div>
             </div>
         </>
@@ -795,9 +791,8 @@ export default function App() {
     };
 
     const handleCheckout = () => {
-        const lines = cart.map(item => `- ${item.quantity}x ${item.name} (${item.price}€)`);
-        const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-        const msg = `SOLICITUD DE PEDIDO:\n\n${lines.join('\n')}\n\nTOTAL ESTIMADO: ${total.toFixed(2)}€\n\nPor favor, contactad conmigo para finalizar el pago y envío.`;
+        const lines = cart.map(item => `- ${item.quantity}x ${item.name}`);
+        const msg = `SOLICITUD DE INFORMACIÓN / PRESUPUESTO:\n\nHola, me interesan los siguientes productos y servicios:\n\n${lines.join('\n')}\n\nPor favor, contactad conmigo para más detalles y precios.`;
 
         setCheckoutMessage(msg);
         setIsCartOpen(false);
