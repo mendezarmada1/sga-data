@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     BarChart3,
@@ -184,6 +184,70 @@ function Hero() {
                 </motion.div>
             </div>
         </section>
+    );
+}
+
+// Helper for counting animation
+const CountUp = ({ end, duration = 2000 }) => {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        let startTime = null;
+        let animationFrame;
+
+        const animate = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const progress = timestamp - startTime;
+            const percentage = Math.min(progress / duration, 1);
+
+            // Ease out quart
+            const ease = 1 - Math.pow(1 - percentage, 4);
+
+            setCount(percentage * end);
+
+            if (progress < duration) {
+                animationFrame = requestAnimationFrame(animate);
+            }
+        };
+
+        animationFrame = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [end, duration]);
+
+    // Handle decimals if original value has them
+    const isDecimal = end % 1 !== 0;
+    return isDecimal ? count.toFixed(1) : Math.floor(count);
+};
+
+function Stats() {
+    const stats = [
+        { label: "Dispositivos Conectados", value: 500, suffix: "+", icon: <Cpu /> },
+        { label: "Datos Procesados/Día", value: 2.5, suffix: "M", icon: <Database /> },
+        { label: "Precisión Certificada", value: 99.9, suffix: "%", icon: <CheckCircle2 /> },
+        { label: "Tiempo de Actividad", value: 24, suffix: "/7", icon: <Zap /> }
+    ];
+
+    return (
+        <div className="py-12 bg-black/30 border-y border-white/5 backdrop-blur-sm relative z-20">
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    {stats.map((stat, index) => (
+                        <div key={index} className="flex flex-col items-center text-center group">
+                            <div className="mb-4 p-3 bg-sga-cyan/5 rounded-full text-sga-cyan group-hover:bg-sga-cyan group-hover:text-sga-navy transition-colors duration-300">
+                                {React.cloneElement(stat.icon, { className: "w-6 h-6" })}
+                            </div>
+                            <div className="text-3xl md:text-4xl font-bold text-white mb-2 flex items-baseline justify-center">
+                                <CountUp end={stat.value} duration={2000} />
+                                <span className="text-sga-cyan text-xl ml-1">{stat.suffix}</span>
+                            </div>
+                            <div className="text-sm text-gray-400 uppercase tracking-widest font-medium">
+                                {stat.label}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     );
 }
 
@@ -817,6 +881,7 @@ export default function App() {
             />
             <main>
                 <Hero />
+                <Stats />
                 <Services />
                 <Products addToCart={addToCart} />
                 <About />
