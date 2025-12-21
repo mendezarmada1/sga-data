@@ -34,5 +34,5 @@ git push origin main
 Write-Host "---------------------------------------------------" -ForegroundColor Cyan
 Write-Host "¡Proceso finalizado!" -ForegroundColor Cyan
 Write-Host "Tu web estará disponible en unos minutos aquí:" -ForegroundColor Cyan
-Write-Host "https://mendezarmada1.github.io/SGA/" -ForegroundColor Yellow
+Write-Host "https://mendezarmada1.github.io/sga-data/" -ForegroundColor Yellow
 Write-Host "---------------------------------------------------" -ForegroundColor Cyan

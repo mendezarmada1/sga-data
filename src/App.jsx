@@ -940,12 +940,16 @@ import { AuthProvider, useAuth } from './AuthContext';
 
 // --- DASHBOARD COMPONENTS ---
 
+import { db } from './firebase';
+import { doc, setDoc } from 'firebase/firestore';
+
 function LoginPage({ onLogin, onBack }) {
     const [isRegistering, setIsRegistering] = useState(false);
     const [isResetting, setIsResetting] = useState(false);
     const [role, setRole] = useState('client');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState(''); // Fixed: Added missing state
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
@@ -976,9 +980,16 @@ function LoginPage({ onLogin, onBack }) {
         try {
             setLoading(true);
             if (isRegistering) {
-                await signup(email, password, name);
-                // Note: In a real app with Firestore, we would save the 'role' here.
-                // For now, we just pass the selected role to the onLogin callback.
+                const userCredential = await signup(email, password, name);
+
+                // Initialize user profile in Firestore
+                await setDoc(doc(db, "users", userCredential.user.uid), {
+                    role: role,
+                    email: email,
+                    name: name,
+                    createdAt: new Date().toISOString()
+                });
+
             } else {
                 await login(email, password);
             }
