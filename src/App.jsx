@@ -941,25 +941,51 @@ import { AuthProvider, useAuth } from './AuthContext';
 // --- DASHBOARD COMPONENTS ---
 
 function LoginPage({ onLogin, onBack }) {
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
     const [role, setRole] = useState('client');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, signup, resetPassword } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setMessage('');
+
+        if (isResetting) {
+            if (!email) return setError('Introduce tu email para recuperar la contraseña.');
+            try {
+                setLoading(true);
+                await resetPassword(email);
+                setMessage('Correo de recuperación enviado. Revisa tu bandeja de entrada.');
+            } catch (err) {
+                console.error("Reset Error:", err);
+                setError('Error al enviar el correo. Verifica que el email sea correcto.');
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
+
         if (!email || !password) return setError('Rellena todos los campos');
 
         try {
-            setError('');
             setLoading(true);
-            await login(email, password);
+            if (isRegistering) {
+                await signup(email, password);
+                // Note: In a real app with Firestore, we would save the 'role' here.
+                // For now, we just pass the selected role to the onLogin callback.
+            } else {
+                await login(email, password);
+            }
             onLogin(role);
         } catch (err) {
-            console.error("Login Error:", err);
-            setError('Error de acceso. Verifica usuario/contraseña.');
+            console.error("Auth Error:", err);
+            setError(isRegistering ? 'Error al registrarse. Contraseña débil o email en uso.' : 'Error de acceso. Verifica usuario/contraseña.');
         } finally {
             setLoading(false);
         }
@@ -978,28 +1004,68 @@ function LoginPage({ onLogin, onBack }) {
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-2xl animate-in fade-in zoom-in duration-500">
 
                     {error && <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded text-red-200 text-sm text-center">{error}</div>}
+                    {message && <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded text-green-200 text-sm text-center">{message}</div>}
 
-                    <div className="flex bg-black/40 p-1 rounded-lg mb-8">
-                        <button onClick={() => setRole('client')} className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'client' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}>
-                            <span className="flex items-center justify-center gap-2"><BarChart3 className="w-4 h-4" /> Cliente</span>
-                        </button>
-                        <button onClick={() => setRole('tech')} className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'tech' ? 'bg-sga-cyan/20 text-sga-cyan shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}>
-                            <span className="flex items-center justify-center gap-2"><Cpu className="w-4 h-4" /> Técnico</span>
-                        </button>
-                    </div>
+                    {!isResetting && (
+                        <>
+                            <div className="mb-4 text-center">
+                                <label className="text-xs uppercase tracking-wider text-gray-500 mb-2 block">
+                                    {isRegistering ? "Selecciona tu tipo de cuenta" : "Acceder como"}
+                                </label>
+                            </div>
+                            <div className="flex bg-black/40 p-1 rounded-lg mb-8">
+                                <button onClick={() => setRole('client')} className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'client' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}>
+                                    <span className="flex items-center justify-center gap-2"><BarChart3 className="w-4 h-4" /> Cliente</span>
+                                </button>
+                                <button onClick={() => setRole('tech')} className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'tech' ? 'bg-sga-cyan/20 text-sga-cyan shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}>
+                                    <span className="flex items-center justify-center gap-2"><Cpu className="w-4 h-4" /> Técnico</span>
+                                </button>
+                            </div>
+                        </>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {isResetting && (
+                            <div className="text-center mb-6">
+                                <h3 className="text-white font-bold text-lg mb-2">Recuperar Contraseña</h3>
+                                <p className="text-gray-400 text-sm">Introduce tu email y te enviaremos las instrucciones.</p>
+                            </div>
+                        )}
+
                         <div>
                             <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Email</label>
                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors" placeholder="usuario@sga.com" />
                         </div>
-                        <div>
-                            <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Contraseña</label>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors" placeholder="••••••••" />
-                        </div>
+
+                        {!isResetting && (
+                            <div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-xs uppercase tracking-wider text-gray-500">Contraseña</label>
+                                    {!isRegistering && (
+                                        <button type="button" onClick={() => { setIsResetting(true); setError(''); setMessage(''); }} className="text-xs text-sga-cyan hover:text-cyan-300 transition-colors">
+                                            ¿Olvidaste tu contraseña?
+                                        </button>
+                                    )}
+                                </div>
+                                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors" placeholder="••••••••" />
+                            </div>
+                        )}
+
                         <button type="submit" disabled={loading} className="w-full bg-sga-cyan hover:bg-cyan-400 text-sga-navy font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-                            {loading ? <Activity className="w-5 h-5 animate-spin" /> : 'Acceder al Sistema'}
+                            {loading ? <Activity className="w-5 h-5 animate-spin" /> : (isResetting ? 'Enviar Correo de Recuperación' : (isRegistering ? 'Crear Cuenta' : 'Acceder al Sistema'))}
                         </button>
+
+                        <div className="text-center">
+                            {isResetting ? (
+                                <button type="button" onClick={() => { setIsResetting(false); setError(''); setMessage(''); }} className="text-gray-500 hover:text-white text-sm transition-colors">
+                                    Cancelar
+                                </button>
+                            ) : (
+                                <button type="button" onClick={() => { setIsRegistering(!isRegistering); setError(''); setMessage(''); }} className="text-sga-cyan hover:text-cyan-300 text-sm underline transition-colors">
+                                    {isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
+                                </button>
+                            )}
+                        </div>
                     </form>
 
                     <div className="mt-6 pt-6 border-t border-white/5 text-center">
