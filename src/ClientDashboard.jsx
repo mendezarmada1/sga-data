@@ -13,7 +13,15 @@ const data = [
     { name: 'Dom', consumo: 3490, ahorro: 4300 },
 ];
 
-export default function ClientDashboard({ onLogout }) {
+export default function ClientDashboard({ onLogout, currentUser }) {
+    const displayName = currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Usuario';
+    const initials = displayName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-sga-cyan selection:text-black">
             {/* Top Bar */}
@@ -28,7 +36,7 @@ export default function ClientDashboard({ onLogout }) {
                         <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                     </div>
                     <div className="h-8 w-8 bg-gradient-to-tr from-sga-cyan to-blue-500 rounded-full flex items-center justify-center font-bold text-xs text-black">
-                        JS
+                        {initials}
                     </div>
                     <button onClick={onLogout} className="text-xs text-red-400 hover:text-red-300 transition-colors">Salir</button>
                 </div>
@@ -40,7 +48,7 @@ export default function ClientDashboard({ onLogout }) {
                 <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                     <div>
                         <h2 className="text-2xl font-bold">Resumen Ejecutivo</h2>
-                        <p className="text-gray-400">Bienvenido, John Smith. Aquí tienes el estado de tu planta.</p>
+                        <p className="text-gray-400">Bienvenido, {displayName}. Aquí tienes el estado de tu planta.</p>
                     </div>
                     <div className="flex gap-2">
                         <button className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm transition-colors border border-white/10 flex items-center gap-2">

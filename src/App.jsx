@@ -971,12 +971,12 @@ function LoginPage({ onLogin, onBack }) {
             return;
         }
 
-        if (!email || !password) return setError('Rellena todos los campos');
+        if (!email || !password || (isRegistering && !name)) return setError('Rellena todos los campos');
 
         try {
             setLoading(true);
             if (isRegistering) {
-                await signup(email, password);
+                await signup(email, password, name);
                 // Note: In a real app with Firestore, we would save the 'role' here.
                 // For now, we just pass the selected role to the onLogin callback.
             } else {
@@ -1032,6 +1032,13 @@ function LoginPage({ onLogin, onBack }) {
                             </div>
                         )}
 
+                        {isRegistering && !isResetting && (
+                            <div>
+                                <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Nombre Completo</label>
+                                <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors" placeholder="Ej: Sebastián Méndez" />
+                            </div>
+                        )}
+
                         <div>
                             <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">Email</label>
                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-sga-cyan/50 transition-colors" placeholder="usuario@sga.com" />
@@ -1070,6 +1077,7 @@ function LoginPage({ onLogin, onBack }) {
 
                     <div className="mt-6 pt-6 border-t border-white/5 text-center">
                         <button onClick={onBack} className="text-gray-500 hover:text-white text-sm transition-colors">← Volver al sitio web</button>
+
                     </div>
                 </div>
             </div>
@@ -1090,6 +1098,7 @@ function AppContent() {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [checkoutMessage, setCheckoutMessage] = useState('');
     const [activeModal, setActiveModal] = useState(null);
+    const { currentUser } = useAuth(); // Get currentUser
 
     // View State: 'landing', 'login', 'client_dash', 'tech_dash'
     const [view, setView] = useState('landing');
@@ -1131,8 +1140,8 @@ function AppContent() {
     };
 
     if (view === 'login') return <LoginPage onLogin={handleLogin} onBack={() => setView('landing')} />;
-    if (view === 'client_dash') return <ClientDashboard onLogout={() => setView('landing')} />;
-    if (view === 'tech_dash') return <TechDashboard onLogout={() => setView('landing')} />;
+    if (view === 'client_dash') return <ClientDashboard currentUser={currentUser} onLogout={() => setView('landing')} />;
+    if (view === 'tech_dash') return <TechDashboard currentUser={currentUser} onLogout={() => setView('landing')} />;
 
     return (
         <div className="min-h-screen text-white selection:bg-sga-cyan selection:text-sga-navy overflow-x-hidden">
