@@ -1,0 +1,30 @@
+{
+    "files": {
+        "source_1": {
+            "path_env_var": "INPUT_FILE_1_PATH",
+            "columns": {
+                "id_cliente": "client_id",
+                "nombre_cliente": "client_name",
+                "email": "client_email",
+                "region": "client_region"
+            },
+            "key": "client_id"
+        },
+        "source_2": {
+            "path_env_var": "INPUT_FILE_2_PATH",
+            "columns": {
+                "id_dispositivo": "device_id",
+                "cod_cliente": "client_id",
+                "fecha": "reading_date",
+                "consumo": "kwh_usage"
+            },
+            "key": "client_id"
+        }
+    },
+    "destination": {
+        "table_name": "unified_energy_data"
+    },
+    "export": {
+        "path_env_var": "OUTPUT_PATH"
+    }
+}
