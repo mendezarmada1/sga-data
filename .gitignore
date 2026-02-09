@@ -1,0 +1,11 @@
+node_modules
+
+# Python
+__pycache__/
+*.pyc
+.env
+etl/venv/
+.venv/
+
+# Data
+data/*.csv
