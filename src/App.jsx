@@ -29,6 +29,27 @@ import prodService from './assets/prod_service.jpg';
 
 import ClientDashboard from './ClientDashboard';
 import TechDashboard from './TechDashboard';
+import EtlUploader from './components/EtlUploader';
+
+function EtlSection() {
+    return (
+        <section id="etl-tool" className="py-20 bg-slate-900 border-y border-white/10 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-sga-cyan/5 -skew-y-2 transform origin-top-left z-0"></div>
+            <div className="max-w-7xl mx-auto px-4 relative z-10">
+                <div className="text-center mb-10">
+                    <span className="text-sga-cyan font-bold tracking-wider text-sm uppercase">Herramienta Interna</span>
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mt-2">Unificador de Datos SGA</h2>
+                    <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
+                        Carga tus reportes CSV y Excel para generar un informe unificado automáticamente.
+                        <br />
+                        <span className="text-xs text-sga-cyan border border-sga-cyan/30 px-2 py-1 rounded mt-2 inline-block">v1.0.0 - Procesamiento en Memoria</span>
+                    </p>
+                </div>
+                <EtlUploader />
+            </div>
+        </section>
+    );
+}
 
 function Navbar({ cartCount, openCart, onOpenLogin }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -1176,6 +1197,7 @@ function AppContent() {
             />
             <main>
                 <Hero />
+                <EtlSection />
                 <Stats />
                 <PlatformFeatures />
                 <Services />
