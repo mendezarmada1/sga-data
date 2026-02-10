@@ -110,9 +110,10 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
         # Sort
         df_merged.sort_values(by='DATE_KEY', inplace=True)
         
-        # Calculate Filename using CSV name + Month/Year of data
+        # Calculate Filename using Excel name + Month/Year of data
         import os
-        csv_name_base = os.path.splitext(csv_file.filename)[0]
+        # User wants to preserve the "Report..." name which likely comes from the Excel template
+        base_name = os.path.splitext(xlsx_file.filename)[0]
         
         if not df_merged.empty:
             max_date = df_merged['DATE_KEY'].max()
@@ -121,7 +122,7 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
             from datetime import datetime
             suffix = datetime.now().strftime('%m%Y')
             
-        filename = f"{csv_name_base}_{suffix}.xlsx"
+        filename = f"{base_name}_{suffix}.xlsx"
 
         # Export with formatting
         output = io.BytesIO()
