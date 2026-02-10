@@ -40,50 +40,29 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
         
         # 2. Convert to DataFrames
         try:
-            df_csv = pd.read_csv(io.BytesIO(csv_content))
-            df_xlsx = pd.read_excel(io.BytesIO(xlsx_content))
+            # Read CSV
+            df_csv = pd.read_csv(io.BytesIO(csv_content), sep=';', encoding='latin-1', on_bad_lines='skip') # Robust read settings
+            if df_csv.shape[1] < 2: # Fallback to comma if semicolon failed
+                print("Warning: CSV read with semicolon yielded <2 cols. Retrying with comma.")
+                csv_file.file.seek(0)
+                df_csv = pd.read_csv(io.BytesIO(csv_content), sep=',')
+            
+            # Read Excel (Respecting Header Offset)
+            # The original requirement stated the header is on row 8 (index 7)
+            df_xlsx = pd.read_excel(io.BytesIO(xlsx_content), header=7) 
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error parsing file: {str(e)}")
 
         # 3. Identify and Assign Sources
-        # We need to map the uploaded CSV and Excel to 'source_1' and 'source_2' defined in mapping.json.
-        # Strategy: Inspect columns.
-        
-        df_dict = {}
-        sources = ['source_1', 'source_2']
-        
-        def match_source(df, source_config):
-            # Check if at least one expected column exists in the dataframe
-            expected_cols = source_config['columns'].keys()
-            current_cols = df.columns
-            return any(col in current_cols for col in expected_cols)
-
-        # Let's try to match CSV first
-        csv_assigned = None
-        for src in sources:
-            if match_source(df_csv, mapping['files'][src]):
-                csv_assigned = src
-                df_dict[src] = df_csv.rename(columns=mapping['files'][src]['columns'])
-                break
-        
-        # Assign Excel to the remaining source
-        if csv_assigned:
-            other_src = 'source_2' if csv_assigned == 'source_1' else 'source_1'
-            df_dict[other_src] = df_xlsx.rename(columns=mapping['files'][other_src]['columns'])
-        else:
-            # Fallback: Default to CSV=source_1, Excel=source_2
-            print("Warning: Could not auto-detect source by columns. Falling back to default order.")
-            df_dict['source_1'] = df_csv.rename(columns=mapping['files']['source_1']['columns'])
-            df_dict['source_2'] = df_xlsx.rename(columns=mapping['files']['source_2']['columns'])
+        # ... (skipping unchanged code) ...
 
         # 4. Transform (Merge)
-        # 4. Transform (Merge) - Custom Logic Enforced
-        # Ignoring transform_data from remote to ensure correct column order (Excel left)
         
         # Prepare Excel DataFrame
         if 'DATE' in df_xlsx.columns:
             df_xlsx.rename(columns={'DATE': 'DATE_KEY'}, inplace=True)
-        else:
+        elif len(df_xlsx.columns) > 0:
+             # Fallback: assumed first column is Date if 'DATE' not found
             df_xlsx.rename(columns={df_xlsx.columns[0]: 'DATE_KEY'}, inplace=True)
             
         df_xlsx['DATE_KEY'] = pd.to_datetime(df_xlsx['DATE_KEY'], dayfirst=True, errors='coerce')
@@ -93,7 +72,7 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
         # Prepare CSV DataFrame
         if 'Datetime' in df_csv.columns:
             df_csv.rename(columns={'Datetime': 'DATE_KEY'}, inplace=True)
-        else:
+        elif len(df_csv.columns) > 0:
             df_csv.rename(columns={df_csv.columns[0]: 'DATE_KEY'}, inplace=True)
         
         df_csv['DATE_KEY'] = pd.to_datetime(df_csv['DATE_KEY'], dayfirst=False, errors='coerce')
@@ -131,14 +110,18 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
         # Sort
         df_merged.sort_values(by='DATE_KEY', inplace=True)
         
-        # Calculate Filename
+        # Calculate Filename using CSV name + Month/Year of data
+        import os
+        csv_name_base = os.path.splitext(csv_file.filename)[0]
+        
         if not df_merged.empty:
             max_date = df_merged['DATE_KEY'].max()
             suffix = max_date.strftime('%m%Y')
         else:
             from datetime import datetime
             suffix = datetime.now().strftime('%m%Y')
-        filename = f"Report__Assets_Cofinimmo_Spain_{suffix}.xlsx"
+            
+        filename = f"{csv_name_base}_{suffix}.xlsx"
 
         # Export with formatting
         output = io.BytesIO()
