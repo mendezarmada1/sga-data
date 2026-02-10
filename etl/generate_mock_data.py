@@ -25,5 +25,5 @@ readings_data = {
     'consumo': [round(random.uniform(10.0, 500.0), 2) for _ in range(50)]
 }
 df_readings = pd.DataFrame(readings_data)
-df_readings.to_csv('data/lecturas_mock.csv', index=False)
-print("Generated data/lecturas_mock.csv")
+df_readings.to_excel('data/lecturas_mock.xlsx', index=False)
+print("Generated data/lecturas_mock.xlsx")

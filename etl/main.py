@@ -30,14 +30,24 @@ def extract_data(file_config):
     
     return df
 
-def transform_data(df1, df2, mapping):
-    key1 = mapping['files']['source_1']['key']
-    key2 = mapping['files']['source_2']['key']
+def transform_data(df_dict, mapping):
+    # Determine which source is Left and which is Right
+    trans_config = mapping.get('transformation', {})
+    left_src_name = trans_config.get('left_source', 'source_1')
+    right_src_name = trans_config.get('right_source', 'source_2')
     
-    print(f"Merging datasets on keys: {key1} (Source 1) and {key2} (Source 2)")
+    print(f"Merge Order: {left_src_name} (Left) + {right_src_name} (Right)")
     
-    # Perform merge (defaulting to inner join, but could be configurable)
-    merged_df = pd.merge(df1, df2, left_on=key1, right_on=key2, how='inner')
+    df_left = df_dict[left_src_name]
+    df_right = df_dict[right_src_name]
+    
+    key_left = mapping['files'][left_src_name]['key']
+    key_right = mapping['files'][right_src_name]['key']
+    
+    print(f"Merging datasets on keys: {key_left} (Left) and {key_right} (Right)")
+    
+    # Perform merge
+    merged_df = pd.merge(df_left, df_right, left_on=key_left, right_on=key_right, how='inner')
     
     return merged_df
 
@@ -67,16 +77,17 @@ def main():
     mapping = load_mapping()
     
     # 1. Extract
+    df_dict = {}
     try:
-        df1 = extract_data(mapping['files']['source_1'])
-        df2 = extract_data(mapping['files']['source_2'])
+        df_dict['source_1'] = extract_data(mapping['files']['source_1'])
+        df_dict['source_2'] = extract_data(mapping['files']['source_2'])
     except Exception as e:
         print(f"Extraction failed: {e}")
         return
 
     # 2. Transform
     try:
-        unified_df = transform_data(df1, df2, mapping)
+        unified_df = transform_data(df_dict, mapping)
         print(f"Transformation complete. unified shape: {unified_df.shape}")
     except Exception as e:
         print(f"Transformation failed: {e}")

@@ -63,5 +63,23 @@ Edita este archivo para ajustar las columnas cuando recibas los datos reales.
     python main.py
     ```
 
+
+## API Backend (Carga Web)
+
+Para usar el componente de carga en la web (`EtlUploader.jsx`), necesitas levantar la API:
+
+1.  Asegúrate de tener las dependencias instaladas (`fastapi`, `uvicorn`, `python-multipart`, `openpyxl`).
+    ```bash
+    pip install -r requirements.txt
+    ```
+    
+2.  Ejecuta el servidor:
+    ```bash
+    uvicorn api:app --reload --port 8000
+    ```
+    
+    La API escuchará en `http://localhost:8000`.
+
 ## Integración
 Este script puede ser ejecutado por cualquier orquestador (cron, Airflow, Mage) simplemente llamando a `python main.py` con las variables de entorno adecuadas.
+

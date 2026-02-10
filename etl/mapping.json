@@ -21,6 +21,10 @@
             "key": "client_id"
         }
     },
+    "transformation": {
+        "left_source": "source_2",
+        "right_source": "source_1"
+    },
     "destination": {
         "table_name": "unified_energy_data"
     },
