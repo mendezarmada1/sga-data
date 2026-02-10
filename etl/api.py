@@ -12,7 +12,12 @@ app = FastAPI()
 # Configurar CORS para permitir peticiones desde el frontend (React)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"], # Ajustar según puerto de React
+    allow_origins=[
+        "http://localhost:5173", 
+        "http://localhost:3000", 
+        "https://mendezarmada1.github.io",
+        "https://mendezarmada1.github.io/sga-data/"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
