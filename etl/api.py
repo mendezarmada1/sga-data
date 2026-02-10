@@ -142,12 +142,15 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
             bold_font = Font(bold=True)
             title_font = Font(bold=True, size=14, color="006064")
 
-            # Header
-            for r in range(1, 5):
-                for c in range(1, ws.max_column + 5):
-                    ws.cell(row=r, column=c).fill = white_fill
+            # Header Background (Full Width for aesthetics, but maybe user wants strict? Let's keep title area wide, but data area strict)
+            # Actually, user complained about "format up to EA", so let's stick to max_col check.
+            
+            # Determine max column index based on Dataframe width
+            # Note: startrow=4 means header is at row 5. 
+            # df_merged.to_excel writes columns 1 to N.
+            max_col_idx = df_merged.shape[1] 
 
-            # Logo
+            # Logo & Title Section (Keep simple)
             current_dir = os.getcwd()
             logo_path_jpg = os.path.join(current_dir, "src", "assets", "logo.jpg")
             logo_path_png = os.path.join(current_dir, "src", "assets", "logo.png")
@@ -170,29 +173,39 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
             ws['B4'] = period_str
             ws['B4'].font = Font(bold=True, size=11, color="006064")
 
-            # Table Styles
+            # Table Styles - STRICT LOOP
             header_row_idx = 5
-            for col in range(1, ws.max_column + 1):
-                cell = ws.cell(row=header_row_idx, column=col)
+            
+            # 1. Header Row Style
+            for col_idx in range(1, max_col_idx + 1):
+                cell = ws.cell(row=header_row_idx, column=col_idx)
                 cell.fill = header_fill
                 cell.font = bold_font
                 cell.alignment = Alignment(horizontal='center', vertical='center')
                 cell.border = thin_border
 
-            for row in range(header_row_idx, ws.max_row + 1):
-                for col in range(1, ws.max_column + 1):
+            # 2. Data Rows Style
+            # ws.max_row includes the data written by to_excel
+            for row in range(header_row_idx + 1, ws.max_row + 1):
+                for col in range(1, max_col_idx + 1):
                     cell = ws.cell(row=row, column=col)
                     cell.border = thin_border
                     
-            for col in ws.columns:
+            # 3. Column Widths
+            # Iterate only through used columns
+            for i, col in enumerate(ws.columns):
+                # Stop if we exceed our data width
+                if i >= max_col_idx:
+                    break
+                    
                 max_length = 0
-                column = col[0].column_letter
+                column_letter = col[0].column_letter
                 for cell in col:
                     try:
                         if len(str(cell.value)) > max_length:
                             max_length = len(str(cell.value))
                     except: pass
-                ws.column_dimensions[column].width = max_length + 2
+                ws.column_dimensions[column_letter].width = max_length + 2
 
         output.seek(0)
         
