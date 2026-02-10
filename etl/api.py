@@ -78,16 +78,144 @@ async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = 
             df_dict['source_2'] = df_xlsx.rename(columns=mapping['files']['source_2']['columns'])
 
         # 4. Transform (Merge)
-        unified_df = transform_data(df_dict, mapping)
+        # 4. Transform (Merge) - Custom Logic Enforced
+        # Ignoring transform_data from remote to ensure correct column order (Excel left)
         
-        # 5. Export to Excel (in memory)
+        # Prepare Excel DataFrame
+        if 'DATE' in df_xlsx.columns:
+            df_xlsx.rename(columns={'DATE': 'DATE_KEY'}, inplace=True)
+        else:
+            df_xlsx.rename(columns={df_xlsx.columns[0]: 'DATE_KEY'}, inplace=True)
+            
+        df_xlsx['DATE_KEY'] = pd.to_datetime(df_xlsx['DATE_KEY'], dayfirst=True, errors='coerce')
+        df_xlsx.dropna(subset=['DATE_KEY'], inplace=True)
+        df_xlsx = sanitize_cols(df_xlsx)
+        
+        # Prepare CSV DataFrame
+        if 'Datetime' in df_csv.columns:
+            df_csv.rename(columns={'Datetime': 'DATE_KEY'}, inplace=True)
+        else:
+            df_csv.rename(columns={df_csv.columns[0]: 'DATE_KEY'}, inplace=True)
+        
+        df_csv['DATE_KEY'] = pd.to_datetime(df_csv['DATE_KEY'], dayfirst=False, errors='coerce')
+        df_csv.dropna(subset=['DATE_KEY'], inplace=True)
+        df_csv = sanitize_cols(df_csv)
+
+        # Merge: Excel (Left) + CSV (Right)
+        df_merged = pd.merge(df_xlsx, df_csv, on='DATE_KEY', how='outer', suffixes=('_XLSX', '_CSV'))
+        
+        # Coalesce Logic
+        cols = df_merged.columns
+        base_cols = set()
+        for c in cols:
+            if c.endswith('_CSV'):
+                base_cols.add(c[:-4])
+            elif c.endswith('_XLSX'):
+                base_cols.add(c[:-5])
+        
+        for base in base_cols:
+            col_csv = f"{base}_CSV"
+            col_xlsx = f"{base}_XLSX"
+            
+            if col_csv in df_merged.columns and col_xlsx in df_merged.columns:
+                # Combined: CSV priority
+                combined = df_merged[col_csv].combine_first(df_merged[col_xlsx])
+                # Overwrite Excel column (to keep position left)
+                df_merged[col_xlsx] = combined
+                df_merged.rename(columns={col_xlsx: base}, inplace=True)
+                df_merged.drop(columns=[col_csv], inplace=True)
+            elif col_csv in df_merged.columns:
+                df_merged.rename(columns={col_csv: base}, inplace=True)
+            elif col_xlsx in df_merged.columns:
+                df_merged.rename(columns={col_xlsx: base}, inplace=True)
+
+        # Sort
+        df_merged.sort_values(by='DATE_KEY', inplace=True)
+        
+        # Calculate Filename
+        if not df_merged.empty:
+            max_date = df_merged['DATE_KEY'].max()
+            suffix = max_date.strftime('%m%Y')
+        else:
+            from datetime import datetime
+            suffix = datetime.now().strftime('%m%Y')
+        filename = f"Report__Assets_Cofinimmo_Spain_{suffix}.xlsx"
+
+        # Export with formatting
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            unified_df.to_excel(writer, index=False, sheet_name='UnifiedData')
+            df_merged.to_excel(writer, index=False, sheet_name='Unified_Data', startrow=4)
+            
+            ws = writer.sheets['Unified_Data']
+            from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+            from openpyxl.drawing.image import Image as XLImage
+            from datetime import datetime
+            import os
+
+            # Styles
+            header_fill = PatternFill(start_color="E0F7FA", end_color="E0F7FA", fill_type="solid")
+            white_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+            ws.sheet_view.showGridLines = False
+            thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+            bold_font = Font(bold=True)
+            title_font = Font(bold=True, size=14, color="006064")
+
+            # Header
+            for r in range(1, 5):
+                for c in range(1, ws.max_column + 5):
+                    ws.cell(row=r, column=c).fill = white_fill
+
+            # Logo
+            current_dir = os.getcwd()
+            logo_path_jpg = os.path.join(current_dir, "src", "assets", "logo.jpg")
+            logo_path_png = os.path.join(current_dir, "src", "assets", "logo.png")
+            logo_path = logo_path_jpg if os.path.exists(logo_path_jpg) else (logo_path_png if os.path.exists(logo_path_png) else None)
+            
+            if logo_path:
+                try:
+                    img = XLImage(logo_path)
+                    img.height = 60
+                    img.width = 60
+                    ws.add_image(img, 'A1')
+                except: pass
+
+            ws['B2'] = "SGA DATA"
+            ws['B2'].font = title_font
+            ws['B3'] = f"Fecha de emisión: {datetime.now().strftime('%d/%m/%Y')}"
+            ws['B3'].font = Font(italic=True, size=10)
+
+            period_str = f"Periodo de Datos: {df_merged['DATE_KEY'].min().strftime('%d/%m/%Y')} - {df_merged['DATE_KEY'].max().strftime('%d/%m/%Y')}" if not df_merged.empty else "Periodo de Datos: N/A"
+            ws['B4'] = period_str
+            ws['B4'].font = Font(bold=True, size=11, color="006064")
+
+            # Table Styles
+            header_row_idx = 5
+            for col in range(1, ws.max_column + 1):
+                cell = ws.cell(row=header_row_idx, column=col)
+                cell.fill = header_fill
+                cell.font = bold_font
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+                cell.border = thin_border
+
+            for row in range(header_row_idx, ws.max_row + 1):
+                for col in range(1, ws.max_column + 1):
+                    cell = ws.cell(row=row, column=col)
+                    cell.border = thin_border
+                    
+            for col in ws.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except: pass
+                ws.column_dimensions[column].width = max_length + 2
+
         output.seek(0)
         
         headers = {
-            'Content-Disposition': 'attachment; filename="Unified_Output.xlsx"'
+            'Content-Disposition': f'attachment; filename="{filename}"'
         }
         
         return StreamingResponse(output, headers=headers, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
