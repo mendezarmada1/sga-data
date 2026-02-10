@@ -22,6 +22,10 @@ app.add_middleware(
 def read_root():
     return {"status": "online", "message": "ETL API is running. Use POST /unify to upload files."}
 
+def sanitize_cols(df):
+    df.columns = [str(c).strip().replace(' ', '_').replace('.', '_').upper() for c in df.columns]
+    return df
+
 @app.post("/unify")
 async def unify_files(csv_file: UploadFile = File(...), xlsx_file: UploadFile = File(...)):
     print(f"Receiving files: CSV={csv_file.filename}, Excel={xlsx_file.filename}")
