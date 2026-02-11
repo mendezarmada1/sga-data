@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { DollarSign, Zap, Leaf, Download, FileText, Bell, Search, User, Edit2, AlertCircle, Save, X } from 'lucide-react';
+import EtlUploader from './components/EtlUploader';
 import { db } from './firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { updateProfile } from "firebase/auth";
@@ -397,6 +398,18 @@ export default function ClientDashboard({ onLogout, currentUser }) {
                         <button className="mt-6 w-full bg-sga-cyan hover:bg-cyan-400 text-sga-navy font-bold py-3 rounded-xl transition-all shadow-lg">
                             Aplicar Optimización Automática
                         </button>
+                    </div>
+                </div>
+
+                {/* Internal Tools Section */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold mb-6 flex items-center gap-2 text-sga-cyan">
+                        <Zap className="w-5 h-5" /> Herramientas de Gestión
+                    </h3>
+                    <div className="bg-black/20 rounded-xl p-4">
+                         <h4 className="text-white font-medium mb-2">Generador de Informes Unificados</h4>
+                         <p className="text-gray-400 text-sm mb-4">Utiliza esta herramienta interna para procesar y unificar los datos brutos de sensores (CSV) y facturación (Excel).</p>
+                         <EtlUploader />
                     </div>
                 </div>
 
