@@ -150,24 +150,63 @@ def process_and_reply():
                     df_merged.to_excel(writer, index=False, sheet_name='Unified_Data', startrow=4)
                     ws = writer.sheets['Unified_Data']
                     
-                    # Estilos Básicos
+                    # --- ESTILOS SGA DATA ---
+                    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+                    from openpyxl.drawing.image import Image as XLImage
+
+                    # Definiciones
                     header_fill = PatternFill(start_color="E0F7FA", end_color="E0F7FA", fill_type="solid")
-                    bold_font = Font(bold=True)
                     thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
-                    
-                    idx = 5
-                    for col_idx in range(1, df_merged.shape[1] + 1):
-                        cell = ws.cell(row=idx, column=col_idx)
+                    bold_font = Font(bold=True)
+                    title_font = Font(bold=True, size=14, color="006064")
+                    ws.sheet_view.showGridLines = False
+
+                    # 1. LOGO
+                    # En GitHub Actions, el repo está en la raíz.
+                    logo_path = "src/assets/logo.png"
+                    if os.path.exists(logo_path):
+                        try:
+                            img = XLImage(logo_path)
+                            img.height = 60
+                            img.width = 60
+                            ws.add_image(img, 'A1')
+                            print("    [STYLE] Logo insertado.")
+                        except Exception as e:
+                            print(f"    [WARN] No se pudo insertar logo: {e}")
+
+                    # 2. CABECERA
+                    ws['B2'] = "SGA DATA"
+                    ws['B2'].font = title_font
+                    ws['B3'] = f"Fecha de emisión: {datetime.now().strftime('%d/%m/%Y')}"
+                    ws['B3'].font = Font(italic=True, size=10)
+
+                    min_date = df_merged['DATE_KEY'].min().strftime('%d/%m/%Y') if not df_merged.empty else "N/A"
+                    max_date = df_merged['DATE_KEY'].max().strftime('%d/%m/%Y') if not df_merged.empty else "N/A"
+                    ws['B4'] = f"Periodo de Datos: {min_date} - {max_date}"
+                    ws['B4'].font = Font(bold=True, size=11, color="006064")
+
+                    # 3. TABLA (Bordes y Cabecera Azul)
+                    header_row_idx = 5
+                    max_col = df_merged.shape[1]
+
+                    # Estilo Cabecera
+                    for col_idx in range(1, max_col + 1):
+                        cell = ws.cell(row=header_row_idx, column=col_idx)
                         cell.fill = header_fill
                         cell.font = bold_font
+                        cell.alignment = Alignment(horizontal='center', vertical='center')
                         cell.border = thin_border
                     
-                    for row in range(idx + 1, ws.max_row + 1):
-                        for col in range(1, df_merged.shape[1] + 1):
-                            ws.cell(row=row, column=col).border = thin_border
-                    
+                    # Estilo Celdas de Datos
+                    for row in range(header_row_idx + 1, ws.max_row + 1):
+                        for col in range(1, max_col + 1):
+                            cell = ws.cell(row=row, column=col)
+                            cell.border = thin_border
+
+                    # 4. ANCHO COLUMNAS (Auto-fit simple)
                     for i, col in enumerate(ws.columns):
-                        ws.column_dimensions[col[0].column_letter].width = 15
+                        if i >= max_col: break
+                        ws.column_dimensions[col[0].column_letter].width = 18
 
                 output_buffer.seek(0)
                 final_bytes = output_buffer.getvalue()
